@@ -27,7 +27,7 @@
 #ifdef BOOST_MSVC
 //whoops! https://svn.boost.org/trac/boost/ticket/5287
 //enjoy this useless dummy class instead
-namespace boost{ namespace interprocess{
+namespace MWBOOST{ namespace interprocess{
     struct file_lock{
         file_lock(const char * = NULL){}
         void lock(void){}

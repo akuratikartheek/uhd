@@ -229,6 +229,8 @@ ENDIF(WIN32)
 IF(CMAKE_SYSTEM_NAME STREQUAL "FreeBSD" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     SET(CMAKE_EXE_LINKER_FLAGS "-lthr ${CMAKE_EXE_LINKER_FLAGS}")
 ENDIF()
+# Set UHD version to vendor
+ADD_DEFINITIONS(-DUHD_RELEASE_MODE=vendor)
 
 ########################################################################
 # Setup Boost
@@ -272,10 +274,12 @@ FIND_PACKAGE(Boost 1.46 COMPONENTS ${BOOST_REQUIRED_COMPONENTS})
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+LINK_DIRECTORIES($ENV{ICU_LIBDIR})
 
 MESSAGE(STATUS "Boost include directories: ${Boost_INCLUDE_DIRS}")
 MESSAGE(STATUS "Boost library directories: ${Boost_LIBRARY_DIRS}")
 MESSAGE(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+MESSAGE(STATUS "icu library directories: $ENV{ICU_LIBDIR}")
 
 ########################################################################
 # Additional settings for build environment
@@ -392,6 +396,9 @@ FOREACH(inc ${Boost_INCLUDE_DIRS})
 ENDFOREACH(inc)
 
 FOREACH(lib ${Boost_LIBRARY_DIRS})
+    LIST(APPEND UHD_PC_LIBS "-L${lib}")
+ENDFOREACH(lib)
+FOREACH(lib $ENV{ICU_LIBDIR})
     LIST(APPEND UHD_PC_LIBS "-L${lib}")
 ENDFOREACH(lib)
 
