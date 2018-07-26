@@ -231,6 +231,13 @@ SET(CMAKE_BUILD_TYPE "${CMAKE_BUILD_TYPE}" CACHE STRING "")
 #force UHD_RELEASE_MODE to be a string for cmake-gui
 SET(UHD_RELEASE_MODE "${UHD_RELEASE_MODE}" CACHE STRING "UHD Release Mode")
 
+########################################################################
+# for '+BOOST_DEFINE_MATH_CONSTANT +"fext-numeric-literals"
+########################################################################
+IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" )
+	ADD_DEFINITIONS(-fext-numeric-literals)
+ENDIF()
+
 IF(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR
     ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
     IF(STRIP_BINARIES)
@@ -326,10 +333,12 @@ FIND_PACKAGE(Boost ${BOOST_MIN_VERSION} COMPONENTS ${BOOST_REQUIRED_COMPONENTS})
 
 INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+LINK_DIRECTORIES($ENV{ICU_LIBDIR})
 
 MESSAGE(STATUS "Boost include directories: ${Boost_INCLUDE_DIRS}")
 MESSAGE(STATUS "Boost library directories: ${Boost_LIBRARY_DIRS}")
 MESSAGE(STATUS "Boost libraries: ${Boost_LIBRARIES}")
+MESSAGE(STATUS "icu library directories: $ENV{ICU_LIBDIR}")
 
 ########################################################################
 # Additional settings for build environment
@@ -439,6 +448,10 @@ FOREACH(inc ${Boost_INCLUDE_DIRS})
 ENDFOREACH(inc)
 
 FOREACH(lib ${Boost_LIBRARY_DIRS})
+    LIST(APPEND UHD_PC_LIBS "-L${lib}")
+ENDFOREACH(lib)
+
+FOREACH(lib $ENV{ICU_LIBDIR})
     LIST(APPEND UHD_PC_LIBS "-L${lib}")
 ENDFOREACH(lib)
 
